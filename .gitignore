@@ -62,7 +62,7 @@ target/
 .ipynb_checkpoints
 
 #LaTex
-.aux
-.log
-.out
-.synctex.gz
+*.aux
+*.log
+*.out
+*.synctex.gz
