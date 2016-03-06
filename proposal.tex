@@ -1,23 +1,27 @@
-\documentclass{article}
+\documentclass{scrartcl}
 \usepackage{geometry}
 \usepackage{csquotes}
 \usepackage{hyperref}
 \geometry{legalpaper, portrait, margin=1in}
  
-\title{Computational Results For Crowdsourced Judgement Elicitation}
+\title{Harvard University, John A. Paulson School of Engineering and Applied Sciences \newline}
+\subtitle{CS236r Project Proposal\\ Computational Results For Peer-Prediction and Crowdsourced Judgement Elicitation}
 \author{Virgile Audi (vaudi@g.harvard.edu)\\
 		Charles Liu (cliu02@g.harvard.edu)}
 
 \begin{document}
  
 \maketitle
- 
-\begin{abstract}
-	Our project will focus primarily on the ``Crowdsourced Judgement Elicitation with Endogenous Proficiency'' paper by Dasgupta and Ghosh [\ref{itm:1}]. Although the paper provided very strong results, giving a maximal Nash Equilibrium of truth-reporting under a variety of scenarios, they required many assumptions to prove their findings. For our final project we'd like to relax some of those assumptions and see if similar results are met. We will develop a Python package that can simulate over the number of tasks/participants and estimate expected rewards for participants.
-\end{abstract}
+	  
+\section{Motivation}
 
-\section{Effort/Proficiency Distribution}
-Two central assumptions in the paper are:
+Reading the numerous papers for this course left us with the same interrogation: how do the assumptions made to obtain clean and useful results hold when it comes to such implementing  mechanisms in real life? This was particularly the case when working on our presentation that focused on Peer-Prediction and Crowd-Sourcing mechanisms. Our project will focus primarily on the ``Crowdsourced Judgement Elicitation with Endogenous Proficiency'' paper by Dasgupta and Ghosh [\ref{itm:1}] and "Eliciting Informative Feedback: The Peer-Prediction Method" by Miller, Resnick and Zeckhauser [\ref{itm:2}]. Although the papers provided very strong results, they required many assumptions to prove their findings. Many of theses assumptions seemed to us unrealistic, as well as some results that followed. For our final project we would therefore like to relax some of those assumptions and see if similar results are met. We plan on developping a Python package that can simulate over the number of tasks/participants and estimate expected rewards for participants, using various experimental designs.\\
+
+\noindent We will now present some of the assumptions we plan on relaxing and test the validity of the results under these new assumptions.
+
+
+\section{Crowd-Sourcing: how to better model Effort and Proficiency?}
+In the Crowd-Sourcing paper, two of the central assumptions made are:
 \begin{itemize}
 	\item Effort is a binary decision - either 0 effort where you guess the correct result based off a coin flip or you give full effort and guess the correct result based off your proficiency
 	\item Your proficiency for obtaining the correct result is greater than .5
@@ -32,11 +36,7 @@ One of the stronger statements we found the paper to make was Lemma 8:
 
 If the rater has any chance of giving full effort, then the optimal strategy is to give full effort. Aside from the proficiency being at least .5, this is reliant on the idea that effort is a binary measure. Another way of looking at this is that the proficiency of a participant is some function of effort, where effort is over a distribution. In our implementation, we will specify some prior on effort that would be used as a parameter in our proficiency distribution.
 
-
-\section{Uncommon Prior}
-
-\section{Summary}
-The paper notes: 
+The paper also notes: 
 
 \begin{displayquote}
 ``We assume that the maximum proficiency $p_i \geq \frac{1}{2}$ for all i— this minimum requirement on agent ability can be ensured in online crowdsourcing settings by prescreening workers on a representative set of tasks (Amazon Mechanical Turk, for instance, offers the ability to prescreen workers [13, 4], whereas in peergrading applications such as on Coursera, students are given a set of pre-graded assignments to measure their grading abilities prior to grading their peers, the results of which can be used as a prescreen.)''
@@ -44,10 +44,31 @@ The paper notes:
 
 We believe this is a very large assumption - in many cases, like the product review setting that was used in the peer prediction paper, the quality of reviewers may not be known. This leads to relaxing different assumptions - on the one hand clearly proficiency, but also the prior on receiving some signal.
 
+\section{Peer-Prediction}
+
+Peer-Prediction relies on many assumptions such as:
+\begin{itemize}
+\item Raters are risk neutral, i.e., that maximizing the expected transfer is equivalent to maximizing expected utility,
+\item Conditional on the product’s type, raters’ signal sare independent and identically distributed, i.e. raters have common prior
+\item Raters have common knowledge of the probability of reporting a signal given a type of a product.
+\end{itemize}
+The paper adresses the practical issues that come when comparing these assumptions to reality but in a very swift manner. We would be particularly interested in looking in greater depths at the validity of the results presented under the relaxation of these assumption. We plan on implementing the mechanisms explained in ``Peer Prediction without a Common Prior'' by Witkowski and Parkes [\ref{itm:3}] for settings where the agents hold subjective and private beliefs about the state of the world and the likelihood of a positive signal given a particular state.\\
+
+Relaxing these assumptions could also help answer another issue mentioned in [\ref{itm:2}] which is which scoring rule to choose? 
+
+\section{Help from the Staff}
+
+The relaxation of the common prior assumption is addressed numerously in the litterature. We would particularly appreciate the possibility of discussing Professor Chen's paper "Trick or Treat: Putting Peer Prediction to the Test" [\ref{itm:4}] with her and especially the design of her experiments (and possibly have access to the data?). If the common prior assumption is discussed abundently, we could not find papers on the relaxation of the risk neutral assumption, any help from the staff on this issue would be appreciated as well.
+
 \section{References}
 \begin{enumerate}
-	\item \url{http://www.arpitaghosh.com/papers/elicit_arxiv_2.pdf} \label{itm:1}
-	\item \url{http://www.eecs.harvard.edu/econcs/pubs/witkowski_ec12.pdf} \label{itm:2}
+	\item \emph{Crowdsourced Judgement Elicitation with Endogenous Proficiency}, A. Dasgupta \& A. Ghosh (\url{http://www.arpitaghosh.com/papers/elicit_arxiv_2.pdf} \label{itm:1})
+	\item \emph{Eliciting Informative Feedback: The Peer-Prediction Method}, N. Miller, P. Resnick, \& R. Zeckhauser (\url{http://www.hks.harvard.edu/fs/rzeckhau/elicit.pdf} \label{itm:2})
+	\item \emph{Peer Prediction without a Common Prior}, J. Witkowski, D. Parkes $\quad$
+	
+	(\url{http://www.eecs.harvard.edu/econcs/pubs/witkowski_ec12.pdf} \label{itm:3})
+	\item \emph{Trick or Treat: Putting Peer Prediction to the Test}, X. A. Gao, A. Mao \& Y. Chen$\quad\quad$ (\url{http://0www.eecs.harvard.edu/econcs/pubs/Gao_acm13.pdf} \label{itm:4})
+	
 \end{enumerate}
 
 \end{document}
