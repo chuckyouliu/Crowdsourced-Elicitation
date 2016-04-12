@@ -59,5 +59,12 @@ class FullEffortFalseAgent(FullEffortTrueAgent):
         
     def give_signal(self):
         return 0.0
+    
+class NoEffortAgent(FullEffortTrueAgent):
+    def __init__(self, types):
+        super(NoEffortAgent, self).__init__(types)
+        
+    def has_effort(self):
+        return 0.0
         
         
