@@ -4,10 +4,8 @@ class FullEffortTrueAgent(object):
     def __init__(self, types):
         self.reset(types)
             
-    def reset(self, types):
-        # perform a subset of tasks
-        tasks = np.random.choice(types.keys(), len(types)*.75, False)
-        self.tasks = dict((t, types[t]) for t in tasks)
+    def reset(self, tasks):
+        self.tasks = tasks
         self.reports = {}
         self.reward = 0
         for idx in self.tasks:
