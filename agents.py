@@ -4,10 +4,8 @@ class FullEffortTrueAgent(object):
     def __init__(self, types):
         self.reset(types)
             
-    def reset(self, types):
-        # perform a subset of tasks
-        tasks = np.random.choice(types.keys(), len(types)*.75, False)
-        self.tasks = dict((t, types[t]) for t in tasks)
+    def reset(self, tasks):
+        self.tasks = tasks
         self.reports = {}
         self.reward = 0
         for idx in self.tasks:
@@ -33,7 +31,7 @@ class FullEffortTrueAgent(object):
             # randomly give true/false
             self.reports[idx] = np.random.uniform() > 0.5
             
-    def task_score(self, idx, reference, d):
+    def task_score(self, idx, reference, d, reward_factor=1):
         my_nonoverlap = []
         ref_nonoverlap = []
         for task in self.tasks:
@@ -51,7 +49,8 @@ class FullEffortTrueAgent(object):
             
         my_sum = np.sum(my_nonoverlap, dtype=np.float)
         ref_sum = np.sum(ref_nonoverlap, dtype=np.float)
-        self.reward += (self.reports[idx] == reference.reports[idx]) - (my_sum*ref_sum/d**2 + (1-my_sum/d)*(1-ref_sum/d))
+        reward = (self.reports[idx] == reference.reports[idx]) - (my_sum*ref_sum/d**2 + (1-my_sum/d)*(1-ref_sum/d))
+        self.reward += reward_factor*reward
             
 class FullEffortFalseAgent(FullEffortTrueAgent):
     def __init__(self, types):
@@ -66,5 +65,11 @@ class NoEffortAgent(FullEffortTrueAgent):
         
     def has_effort(self):
         return 0.0
+    
+class RandomEffortTrueAgent(FullEffortTrueAgent):
+    def __init__(self, types, max_effort=1.):
+        self.max_effort = max_effort
+        super(RandomEffortTrueAgent, self).__init__(types)
         
-        
+    def has_effort(self):
+        return np.random.uniform(0, self.max_effort)
