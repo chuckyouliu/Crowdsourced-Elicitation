@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{amsmath}
 \graphicspath{ {images/} }
 
 \geometry{legalpaper, portrait, margin=1in}
@@ -19,7 +20,7 @@
 \maketitle
 \section*{Introduction}
 
-A common theme throughout the course is to question the practicality of mechanisms discussed in class. For our presentation of \emph{Crowdsourced Judgement Elicitation with Endogenous Proficiency} and \emph{Eliciting Informative Feedback: The Peer-Prediction Method}, we found the mechanisms relied on strong assumptions that were generally unrealistic. Also, as seen in the second homework with specifying learning rates, in many situations a model can be very sensitive to its parameterization. Difficulties in finding proper parameters can also be viewed as a potential flaw of the mechanism, making it unsuitable for use in a practical setting. For our final project we wanted to take a deeper look at the two mechanisms, relax their assumptions, and see if the mechanism can be modified to achieve similar results.
+A common theme throughout the course is to question the practicality of mechanisms discussed in class. For our presentation of \emph{Crowdsourced Judgement Elicitation with Endogenous Proficiency} and \emph{Eliciting Informative Feedback: The Peer-Prediction Method}, we found the mechanisms relied on strong assumptions that were generally unrealistic. Also, as seen in the second homework with specifying learning rates, in many situations a model can be very sensitive to its parameterization. Difficulties in finding proper parameters can also be viewed as a potential flaw of the mechanism, making it unsuitable for use in a practical setting. For our final project we wanted to take a deeper look at the two mechanisms, relax their assumptions, and see if the mechanism can be modified to achieve similar results. All work can be found at \url{https://github.com/chuckyouliu/Crowdsourced-Elicitation}.
 
 \section{Crowdsourced Elicitation}
 
@@ -47,6 +48,73 @@ Suppose the probability of agent i using strategy (1, X) is $\delta$ and strateg
 \end{figure}
 
 Figure 1 is a summary of the main results and Figure 2 of Lemma 8. In each scenario, there were 100 tasks and 20 agents each performing 10 tasks. Simulations were run 1000 times, rewards were scaled by 10, and no costs were factored into the model. All agent proficiencies were randomly assigned between 0.5 and 1.
+
+\subsection{Continuous Effort}
+
+The paper also noted that all results could be extended to the case of a continuous effort distribution where proficiency increased linearly. For a given agent with max proficiency $p_m$, proficiency for a given effort level $e$ was calculated as:
+
+\begin{eqnarray*}
+	prof(e) = 0.5 + e*(p_m - 0.5)
+\end{eqnarray*}
+
+This maintains the properties of the binary effort case: when effort is fully given your proficiency corresponds to the max proficiency, and when no effort is given your proficiency is in effect a random coin flip. To test that giving full effort was still an equilibrium, we randomly assigned effort levels to each agent. Then iteratively, we would select one agent and perturb its effort level up and down by 0.05 and move the agent's effort level to whatever returned the highest reward. No costs were factored in and rewards were scaled by a factor of 10, similar to the original results.
+
+\begin{figure}[H]
+	\caption{Computational results from having continuous effort}
+	\centering
+	\includegraphics[width=1.0\textwidth]{continuous_effort}
+\end{figure}
+
+An equilibrium at full effort is generally reached, but the convergence is not immediate for agents with a lower max proficiency. Figure 3 displays the trace of efforts for each agent under three scenarios:
+\begin{itemize}
+	\item Max proficiencies between 0.5 and 1
+	\item Max proficiencies between 0.75 and 1
+	\item Max proficiency of 1
+\end{itemize}
+Convergence is immediate in the case where max proficiency for each agent is 1, but the more relaxed case sees a more varied strategy with a few agents not approaching giving full effort. For those agents in the last 30 iterations who gave less than .8 effort, the average maximum proficiency of the agent was .616.
+
+\subsection{Cost Reporting}
+
+Although not ideal, it may be possible to enforce some minimum proficiency level of an agent beyond .5 so as to ensure a faster convergence to full effort as an optimal strategy. However, even with a scaling factor of 10 the average reward for an agent in the full effort/truthful equilibrum was only around 12. This mechanism already isn't entirely rational as it is possible for an agent to experience negative rewards, incurring any kind of cost would require a much larger scaling factor for the reward. The paper points out that all results from the paper hold when costs scale linearly to effort, but it would be more interesting to test under different, perhaps convex, cost curves. 
+
+However, computationally it becomes the case that either the costs outweight the benefit of reporting truthfully and the optimal strategy is to give no effort or the reward scaling factor is so large that the costs are negligible resulting in the same results as the paper regardless of the cost curve. As seen from the results in Figure 1, the rewards have quite a lot of variance, so having a large scaling factor to account for costs could potentially lead to very high (and low) rewards. Altogether, it would be nicer to have a modified mechanism that accounted for costs irrespective of the paper's main reward function.
+
+\subsubsection{Take It Or Leave It Crowdsourced Elicitation}
+The Take It Or Leave It mechanism that was introduced in class involved asking for a cost from a user, sampling from a distribution, and conducting the survey from the user only if the sample was higher than the user's cost. The mechanism was both truthful and individually rational. It is useful in our case in that we'd like to ask an agent for a cost to reimburse for reporting a task, but we would obviously want a truthful reporting of the cost. Using TIOLI, we introduce a modified crowdsourcing mechanism:
+
+\begin{enumerate}
+	\item Distribute tasks to all agents in usual way
+	\item For each task, obtain a sample $p$
+	\item For each agent, ask for a reported cost
+	\item Remove tasks for agents where reported cost is higher than corresponding $p$
+	\item Remove tasks for agents who don't have a reference rater or sufficient non-overlapping tasks
+	\item Conduct crowdsourced mechanism and then add additional sample $p$ as reward for each task
+\end{enumerate}
+
+Finally, if we were to estimate the true signal for a task (e.g. true grade for a student from his peers' grades), we can first estimate the effort given by the agents via their reported cost. If there were some information about each agents' maximum proficiency, we could calculate the probabilities of their reports given the true signal of the task and see which signal is higher.
+
+This mechanism would still incentivize telling the truth as reimbursing the cost gives no incentive to be untruthful and the reward function would still incentivize being truthful if there are other truthful agents. However, one's expected return for giving no effort is no longer 0 as an agent will receive a reimbursement for completing every task.
+
+ \begin{figure}[H]
+	\caption{Take It Or Leave It Crowdsourced Mechanism}
+	\centering
+	\includegraphics[width=1.0\textwidth]{tioli_effort}
+\end{figure}
+
+As Figure 4 shows, the agents are still generally progressing towards telling the truth when proficiencies are high, but in the case of only between 0.5 and 1 the strategies fluctuate heavily. Costs were set equal to effort level, and samples were drawn from a normal distribution with mean 2 and standard deviation 0.5. All other settings were the same as those from Figure 3.
+
+If agent's utility functions aren't linear, they may be fine with gaining some utility for providing no effort. It is also possible that a task has no agents reporting it, though in very large settings this is unlikely. The choice of the distribution becomes very sensitive, but in general the results looked similar with various price distributions (even fixed price) above the maximum cost. We think this is preferable to simply scaling the reward factor of the original mechanism as there are more reasonable bounds on the possible reward given out to reimburse costs whereas as seen in the original computational results, rewards can be quite varied.
+
+\subsubsection{Differing Cost Curves}
+Whereas previously the choice of the scaling factor for rewards resulted in either dominating the costs or being dominated and subsequently the optimal strategy went to full or no effort, now with the take it or leave it mechanism varying proficiency curves can be more closely examined.
+
+ \begin{figure}[H]
+	\caption{Cost Curve Effects}
+	\centering
+	\includegraphics[width=1.0\textwidth]{cost_curves}
+\end{figure}
+
+Figure 5 shows a new proficiency curve corresponding to the effort given (and consequently the cost which are linear to effort). We see that there is no longer a convergence to fully telling the truth in the convex case, whereas the convergence seems to happen in the concave case albeit slowly.
 
 \section{Peer Prediction}
 
