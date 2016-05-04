@@ -118,28 +118,34 @@ Figure 5 shows a new proficiency curve corresponding to the effort given (and co
 
 \section{Peer Prediction}
 
-We recall the main assumptions made in the paper:
+We now focus on a second mechanism to elicit truthful reports from agents, i.e. peer prediction. 
 
+\subsection{The Setting}
+
+We consider a group of $n\geq2$ rational, risk-neural and self-interested agents. The objective of the mechanism is to ellicit for each of these agents $i$ a signal $s_i \in \{1,..., k\}$, which corresponds to an agent's perception of a true state $T \in \{1, ..., m\}$. To translate this set-up in a more practical example, we can imagine multiple agents buying a camera from Amazon. This camera can either be one of two true state: "good" or "bad" quality. The goal is to elicit the perception of the buyers which can be either: "satisfied", "indifferent" or ''disappointed". In order to elicit these signals, we as mechanism designers, need to incentivise the agents by creating a reward function.\\
+
+In order to build this reward function, we need to adopt a probabilistic approach, and suppose that each agent has some prior knowledge of how true states are distributed, represented by $P_i(T=t)$, and how he percieves his signals given a state, denoted by $P_i(S = s | T = t)$. The assumptions one makes on how these signals are distributed, and what information is common or private knowledge will influence the choice of mechanism and will be the focus of the following parts.
+
+\subsection{The Classical Approach}
+
+The classical approach to peer prediction was introduced by Miller et al. (2005). In their paper, the authors make the following assumptions:
+
+\begin{itemize}
+\item Raters have common prior over types i.e. $P_i(T = t) = P(T = t) \quad\forall i$,
+\item Conditional on the product’s type, raters’ signals are independent and identically distributed,
+\item Both the mechanism administrator and the raters have common knowledge of the probability of reporting a signal given a type of a product.
+\end{itemize}
+
+Given these strong assumptions, the mechanism is designed as follows:
 \begin{enumerate}
-\item Conditional on the product’s type, raters’ signal sare independent and identically distributed, i.e. raters have common prior
-\item Raters have common knowledge of the probability of reporting a signal given a type of a product.
+\item The center asks each rater to announce his/her signal $s^i$
+\item The center assigns a reference rater $j$ to each agent $i$ with $i\neq j$,
+\item The center rewards agent $i$ by using a scoring rule such as the logarithmic scoring rule:
+$$R(s^j|s^i) = \log p(s^j|s^i)$$
 \end{enumerate}
 
-The objective of this project being to relax some of these assumptions, we implemented an agent class in python that would allow for different prior distribibutions as well as personal signal probability given the particular type of a product. We also implemented the various score functions mentioned in the paper, i.e. Quadratic, Spherical and Log scoring rules.
+Propositon 1 in Miller et al. proves that truthful reporting is a strict Nash equilibrium. Nevertheless, as one can observe in step 3, it is crucial in order to reward each agent given their reports, that the mechanism knows the priors and distributions of signals given types ! 
 
-We then wanted to verify the main proposition of the paper:
-
-\begin{displayquote}
-For any mapping r that assigns to each rater i a reference rater r i  ̸= i, and for any proper scoring rule R, truthful reporting is a strict Nash equilibrium of the simultaneous reporting game with transfers  i∗ .
-\end{displayquote}
-
-To do so, we simulated 1000 experiments where 2 agents who satisfy the assumptions presented above, reports 1000 signals over two types. We fix agent 2 to always be truthful and let agent 1 be truthful, deceitful or even adopt a randomised strategy (0.5, 0.5). As we can see on figure 4, it seems to always be better to report truthfully, even if it is only slightly more advantageous than to report using a randomised strategy. This last statement could also be invalidated with further testing and different randomised strategies.\\
-
-We also noted an interesting results when trying to relax the second assumption stated above. For Proposition 1 to hold, we in fact need not only that  raters have common knowledge of the probability of reporting a signal given a type of a product, but also that these distributions are to be the same. To validate this new assumption, we simulated the same experiments as before, but with agents having different distributions of perception, which is in fact close to the proficiency consideration of the crowd-sourcing paper. In one case, we used an agent that was rather undecided when receiving a signal, having a 50\% chance of correctly reading the signal. In the other, we designed an agent that was very bad at identifying the type for which the second agent is actually quite good at, and keeping the second type distribution the same. Figure 6 shows that to always lie is a better strategy for agent 1, if he knows that he tends to read signals worse than his refering agent !\\ 
-
-Next steps of this part of the project woudl be to focus on this issue as well as relaxing the first assumption of common priors over types.
-\section{Results}
-\subsection{Peer Prediction}
 \begin{figure}[H]
 \caption{Computational verification of Property 1}
 \begin{subfigure}{0.4\textwidth}
@@ -150,6 +156,7 @@ Next steps of this part of the project woudl be to focus on this issue as well a
 \includegraphics[scale=0.4]{rand}
 \end{subfigure}
 \end{figure}
+These assumptions appeared to us as the most unrealistic. We therefore intented to relax these assumptions and see if we could still use the same mechanism. Let's first relax the assumption that agents have identical signal distributions given tasks. We nevertheless maintain the assumptions that everything is common knowledge to both participants and the mechanism since otherwise the latter would not be able to reward agents. We simulated 1000 experiments where two agents are asked to report one of two potential signals given two true states. These agents had different signal distributions. 
 
 \begin{figure}[H]
 \caption{Relaxing Assumption 2}
@@ -161,4 +168,112 @@ Next steps of this part of the project woudl be to focus on this issue as well a
 \includegraphics[scale=0.4]{pp_3}
 \end{subfigure}
 \end{figure}
+
+On the left hand side of figure 8, agent 1 had rather similar signal distributions (only perturbed by a little noise) to agent 2. On the right hand side, agent 1 was much less proficient at perceiving a higher signal given a type that agent 2. In both cases, agents knew about their proficiency and how it compared to the other agent's. These experiments shows that reporting the opposite of the signal perceived can in fact yield higher rewards on average than truthful reporting. A more realistic approach to peer prediction seems to break the mechanism presented by Miller et al. We now present a mechanism that allows a relaxation of the common knowlodge and common priors by introducing the notion of privacy.
+
+\subsection{Private-Prior Peer Prediction}
+
+This mechanism was introduced by Witkowksi et al. in 2012. This mechanism deviates from the previous one in two ways:
+\begin{itemize}
+\item Agents have their own beliefs about the true states (even the number can differ) and how signals given states are distributed,
+\item This information is private to each agent, i.e. neither the mechanism nor the other agents have access to this information.
+\end{itemize}
+
+The assumptions made by Witkowsky seem therefore much more realistic than Miller's omniscient mechanism. However, the results presented in the 2012 paper were limited to the case where agents were asked to report one of two signals ("good" or "bad", "Like" or "Dislike", etc.), denoted by $\{0,1\} = \{l,h\}$. The mechanism is implemented as follows:
+
+\begin{enumerate}
+\item Assign to agent $i$ a reference agent $j$
+\item Ask agent $i$ for his/her prior signal belief $y_i = P_i(h)\,\in\,[0,1]$ that another agent will receive a high signal
+\item After observing his/her signal, ask agent $i$ the posterior signal belief report $y_i' \neq y_i$ that another agent will receive a high signal
+\item Infer agents implicit signal $x_i$ by:
+\[x_i = \begin{cases}
+    h,& \text{if } y_i'\geq y_i\\
+    l,              & \text{otherwise}
+\end{cases}
+\]
+\item Reward agent $i$ by:
+$$u_i = R(y_i,x_j) + R(y_i',x_j)$$
+\end{enumerate}
+where $R$ is a strictly proper scoring rule and $x_j$ is agent $j$'s implicit signal. To ensure individual rationality, it is suggested to use the normalised binary quadratic scoring rule $R_q$:
+\begin{align*}
+R_q(y,1) &= 2y-y^2\\
+R_q(y,0) &= 1-y^2
+\end{align*}
+
+Under the assumption of temporal separation (possibility of asking an agent for his reports at two distinct moment in time), and admissibility of beliefs, then this mechanism is strictly \emph{ex post subjective incentive compatible}, i.e. reporting truthful prior and posteriors is an equilibrium.\\
+
+We wished to investigate numerically this claim. We simulated multiple "experiments" with two participants with different priors over signals and signals. This mechanism gives the possibility to each agent to report untruthfully at two different stages, i.e. his prior and posterior. We tested 3 scenarios where agent 1 lies about his first, second or both reports.
+
+\begin{figure}[H]
+\caption{Private-Prior PP}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.4]{images/pp_first}
+\end{subfigure}
+\hspace{0.1\textwidth}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.4]{images/pp_second}
+\end{subfigure}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/pp_both}
+\end{figure}
+
+Emperical experiments confirmed the results presented in the paper. However, Miller's paper did not constrained the use of their mechanism to the 2-signal case, we therefore tried to adapt Witkowski mechanism to a 3-signal situation.
+
+\subsection{The 3-signal case}
+
+If Witkowksi limits his analysis to only two signals, it is because he relies on this crucial point to infer the implicit signal for each agent. Indeed, observing a high signal would have for consequence to increase the posterior belief  of another agent receiving a high signal. When dealing with more than two signals, this relation is not true anymore. For instance. Consider an agent that has prior over 2 states:
+$$P(T = 1) = 0.3 \text{ and } P(T=2) = 0.7$$
+and condition distribution of signals:
+$$P(s = 1 | T = 1) = 0.7,\, P(s = 2 | T = 1) = 0.1, \, \text{and } P(s = 3 | T = 1) = 0.2$$
+$$P(s = 1 | T = 2) = 0.1,\, P(s = 2 | T = 2) = 0.2, \, \text{and } P(s = 3 | T = 2) = 0.7$$
+This yields prior over signals equal to:
+$$P(s = 1) = 0.28, \, P(s=2) = 0.17,\text{ and } P(s=3)=0.55$$
+If agent observes a signal of 2, then his posterior distributions is therefore:
+$$P(s = 1) = 0.169, \, P(s=2) = 0.183,\text{ and } P(s=3)=0.649$$
+and if he observes 3, then:
+$$P(s = 1) = 0.177, \, P(s=2) = 0.176,\text{ and } P(s=3)=0.646$$
+It is therefore unclear how to conclude which is his signal when comparing these posteriors with the priors.\\ 
+
+We therefore propose the following mechanism:
+\begin{enumerate}
+\item Assign to agent $i$ a reference agent $j$
+\item Ask agent $i$ for his prior belief distribution $y_i$
+\item After observing the signal, ask agent $i$ for his posterior belief distribution $y_i'$ as well as his signal $x_i$
+\item Reward agent $i$ by:
+$$u_i = R(y_i,x_j) + R(y_i',x_j)$$
+\end{enumerate}
+where $R$ is the classical quadratic scoring rule $R(\mathbf{y},i) = y_i -  \mathbf{y}\cdot\mathbf{y}$.\\
+
+In this set-up, the agent would not have a reason to report a wrong signal as his reward is not based on this report but on his beliefs. If we had trouble proving formally that this mechanism would ellicit the truth theoretically, an informal argument for it would be to use that R is a stricly proper scoring rule.\\
+
+\begin{figure}[H]
+\caption{Private-Prior with 3 signals}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.4]{images/3_1}
+\end{subfigure}
+\hspace{0.1\textwidth}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.4]{images/3_2}
+\end{subfigure}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_3}
+\end{figure}
+
+The postulate of truthful ellication seems to hold under different similutations, where agents have different priors, and have different lying strategies. Nevertheless, this mechanism could be difficult to implement as it can appear to be quite cumbersome for the agents to report distributions.\\
+
+\section{Conclusion}
+In this project, we have presented methods about how to relax assumptions that made the mechanisms of crowd-sourcing and peer-prediction presented in class difficult to apply in real life. Relaxing assumption is no easy task and these mechanisms seems far from being fit to reality. The limitation to the 2-signal case is an example of this and we would have benefited from more time to carry out more rigorous extensions of such mechanisms.
+
+\section*{References}
+\begin{enumerate}
+	\item \emph{Crowdsourced Judgement Elicitation with Endogenous Proficiency}, A. Dasgupta \& A. Ghosh (\url{http://www.arpitaghosh.com/papers/elicit_arxiv_2.pdf} \label{itm:1})
+	\item \emph{Eliciting Informative Feedback: The Peer-Prediction Method}, N. Miller, P. Resnick, \& R. Zeckhauser, 2005 (\url{http://www.hks.harvard.edu/fs/rzeckhau/elicit.pdf} \label{itm:2})
+	\item \emph{Peer Prediction without a Common Prior}, J. Witkowski, D. Parkes, 2012 $\quad$
+	(\url{http://www.eecs.harvard.edu/econcs/pubs/witkowski_ec12.pdf} \label{itm:3})
+	\item \emph{Conducting truthful surveys, cheaply}, A. Roth, G. Schoenebeck, Proceedings of the 13th ACM conference on Electrical Commerce, 2012, \quad (\url{http://arxiv.org/pdf/1203.0353v1.pdf})
+\end{enumerate}
 \end{document}
