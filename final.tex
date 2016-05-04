@@ -122,7 +122,7 @@ We now focus on a second mechanism to elicit truthful reports from agents, i.e. 
 
 \subsection{The Setting}
 
-We consider a group of $n\geq2$ rational, risk-neural and self-interested agents. The objective of the mechanism is to ellicit for each of these agents $i$ a signal $s_i \in \{1,..., k\}$, which corresponds to an agent's perception of a true state $T \in \{1, ..., m\}$. To translate this set-up in a more practical example, we can imagine multiple agents buying a camera from Amazon. This camera can either be one of two true state: "good" or "bad" quality. The goal is to elicit the perception of the buyers which can be either: "satisfied", "indifferent" or ''disappointed". In order to elicit these signals, we as mechanism designers, need to incentivise the agents by creating a reward function.\\
+We consider a group of $n\geq2$ rational, risk-neutral and self-interested agents. The objective of the mechanism is to ellicit for each of these agents $i$ a signal $s_i \in \{1,..., k\}$, which corresponds to an agent's perception of a true state $T \in \{1, ..., m\}$. To translate this set-up in a more practical example, we can imagine multiple agents buying a camera from Amazon. This camera can either be one of two true state: "good" or "bad" quality. The goal is to elicit the perception of the buyers which can be either: "satisfied", "indifferent" or ''disappointed". In order to elicit these signals, we as mechanism designers, need to incentivise the agents by creating a reward function.\\
 
 In order to build this reward function, we need to adopt a probabilistic approach, and suppose that each agent has some prior knowledge of how true states are distributed, represented by $P_i(T=t)$, and how he percieves his signals given a state, denoted by $P_i(S = s | T = t)$. The assumptions one makes on how these signals are distributed, and what information is common or private knowledge will influence the choice of mechanism and will be the focus of the following parts.
 
@@ -156,7 +156,7 @@ Propositon 1 in Miller et al. proves that truthful reporting is a strict Nash eq
 \includegraphics[scale=0.4]{rand}
 \end{subfigure}
 \end{figure}
-These assumptions appeared to us as the most unrealistic. We therefore intented to relax these assumptions and see if we could still use the same mechanism. Let's first relax the assumption that agents have identical signal distributions given tasks. We nevertheless maintain the assumptions that everything is common knowledge to both participants and the mechanism since otherwise the latter would not be able to reward agents. We simulated 1000 experiments where two agents are asked to report one of two potential signals given two true states. These agents had different signal distributions. 
+These assumptions appeared to us as the most unrealistic. Our intent is to relax these assumptions and see if we can still use the same mechanism. Let's first relax the assumption that agents have identical signal distributions given tasks. We nevertheless maintain the assumptions that everything is common knowledge to both participants and the mechanism since otherwise the latter would not be able to reward agents. We simulated 1000 experiments where two agents are asked to report one of two potential signals given two true states. These agents had different signal distributions. 
 
 \begin{figure}[H]
 \caption{Relaxing Assumption 2}
@@ -246,7 +246,7 @@ $$u_i = R(y_i,x_j) + R(y_i',x_j)$$
 \end{enumerate}
 where $R$ is the classical quadratic scoring rule $R(\mathbf{y},i) = y_i -  \mathbf{y}\cdot\mathbf{y}$.\\
 
-In this set-up, the agent would not have a reason to report a wrong signal as his reward is not based on this report but on his beliefs. If we had trouble proving formally that this mechanism would ellicit the truth theoretically, an informal argument for it would be to use that R is a stricly proper scoring rule.\\
+In this set-up, the agent would not have a reason to report a wrong signal as his reward is not based on this report but on his beliefs. If we had trouble proving formally that this mechanism would ellicit the truth theoretically, an informal argument for it would be to use that R is a strictly proper scoring rule.\\
 
 \begin{figure}[H]
 \caption{Private-Prior with 3 signals}
@@ -266,7 +266,7 @@ In this set-up, the agent would not have a reason to report a wrong signal as hi
 The postulate of truthful ellication seems to hold under different similutations, where agents have different priors, and have different lying strategies. Nevertheless, this mechanism could be difficult to implement as it can appear to be quite cumbersome for the agents to report distributions.\\
 
 \section{Conclusion}
-In this project, we have presented methods about how to relax assumptions that made the mechanisms of crowd-sourcing and peer-prediction presented in class difficult to apply in real life. Relaxing assumption is no easy task and these mechanisms seems far from being fit to reality. The limitation to the 2-signal case is an example of this and we would have benefited from more time to carry out more rigorous extensions of such mechanisms.
+In this project, we have presented methods to relax assumptions that made the mechanisms of crowd-sourcing and peer-prediction presented in class difficult to apply in real life. Relaxing assumptions is no easy task and these mechanisms seems far from being fit to reality. The limitation to the 2-signal case is an example of this and we would have benefited from more time to carry out more rigorous extensions of such mechanisms.
 
 \section*{References}
 \begin{enumerate}
